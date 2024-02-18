@@ -34,107 +34,42 @@ class Backgroud {
     }
 }
 
-class Character {
-    constructor(x, y, width, height, color) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.color = color;
-    }
-
-    draw(canvasContext) {}
-}
-
-class Hero extends Character { 
-    constructor(x, y, width, height, color) {
-        super(x, y, width, height, color);
-        this.jumpForce = 12; // Adjust this value to control the jump height
-        this.isJumping = false;
-        this.size = this.height;
-        this.velocityX = 0; // Horizontal velocity
-        this.accelerationX = 0.2; // Horizontal acceleration
-        this.maxSpeedX = 5; // Maximum horizontal speed
-        this.isMovingRight = false;
-        this.isMovingLeft = false;
-    }
-
-    update(canvas) {
-        
-        if (this.isJumping) {
-            this.y -= this.jumpForce;
-            this.jumpForce -= 1; // Apply gravity
-            if (this.y >= canvas.height - this.height) {
-                this.y = canvas.height - this.height;
-                this.isJumping = false;
-                this.jumpForce = 12;
-            }
-        }
-    
-        if(this.isMovingRight) {
-            // Apply horizontal movement physics
-            this.velocityX += this.accelerationX;
-            this.velocityX = Math.min(this.velocityX, this.maxSpeedX);
-            if (this.x >= canvas.width/2) {
-                this.x = canvas.width/2;
-            } else {
-                this.x += this.velocityX;
-            }
-            
-        }
-    
-        if(this.isMovingLeft) {
-            this.velocityX += this.accelerationX;
-            this.velocityX = Math.min(this.velocityX, this.maxSpeedX);
-            if(this.x <= 0) {
-                this.x = 0;
-            } else {
-                this.x -= this.velocityX;
-            }
-        }
-    }
-
-    draw(canvasContext) {
-        canvasContext.fillStyle = this.color;
-        canvasContext.fillRect(this.x, this.y, this.width, this.height);
-    }
-}
-
-class Enemy extends Character {
-    constructor(x, y, width, height, color) {
-        super(x, y, width, height, color);
-        this.size = this.height;
-        this.velocityX = 0; // Horizontal velocity
-        this.accelerationX = 0.2; // Horizontal acceleration
-        this.maxSpeedX = 5; // Maximum horizontal speed
-        this.isMovingRight = false;
-        this.isMovingLeft = false;
-    }
-
-    update() {
-        this.x -= 1;
-    }
-
-    draw(canvasContext) {
-        canvasContext.fillStyle = this.color;
-        canvasContext.fillRect(this.x, this.y, this.width, this.height);
-    }
-}
-
 // Background and characters
 const background = new Backgroud(0, 0, canvas.width, canvas.height);
 const mainCharacter = new Hero(50, canvas.height - 50, 50, 50, 'blue');
-const enemyCharacter = new Enemy(canvas.width, canvas.height - 30, 30, 30, 'red');
+
+// Start with one enemy
+const enemyImages = ['gazebo1.png', 'ramita.png', 'hongo.png'];
+const enemySizes = [35, 50, 60];
+const enemies = [new Enemy(canvas.width, canvas.height - 50, 50, 50, 'gazebo1.png')];
+
+const probabilityPercent = 20;
+// Create an enemy every 2 seconds
+const spawnEnemy = setInterval(() => {
+    let randomPorcent = Math.floor(Math.random() * 100);
+    let shouldCreateEnemy = randomPorcent < probabilityPercent;
+    if (shouldCreateEnemy) {
+        console.log('Enemy created with probability: ' + probabilityPercent + " and random: " + randomPorcent);
+        // randomely choose between three images
+        let random = Math.floor(Math.random() * 3);
+        let imageSrc = enemyImages[random];
+        enemies.push(new Enemy(canvas.width, canvas.height - enemySizes[random], enemySizes[random], enemySizes[random], imageSrc));
+    }
+}, 2000);
 
 function update() {
         
     mainCharacter.update(canvas);
 
     // Enemies are always moving from right to left
-    enemyCharacter.update();
+    enemies.forEach(enemy => {
+        enemy.update(canvas);
+    });
 
     // Update background at the end of the update loop to already have all the computation of the characters.
     background.updateByReference(mainCharacter);
+
+
 }
 
 function render() {
@@ -145,7 +80,10 @@ function render() {
     background.draw(ctx);
 
     // Draw the enemy character
-    enemyCharacter.draw(ctx);
+    //enemyCharacter.draw(ctx);
+    enemies.forEach(enemy => {
+        enemy.draw(ctx);
+    });
 
     // Draw the main character
     mainCharacter.draw(ctx);
