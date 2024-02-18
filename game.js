@@ -36,7 +36,7 @@ class Backgroud {
 
 // Background and characters
 const background = new Backgroud(0, 0, canvas.width, canvas.height);
-const mainCharacter = new Hero(50, canvas.height - 50, 50, 50, 'blue');
+const mainCharacter = new Hero(50, canvas.height - 80, 80, 80, 'walk.png');
 
 // Start with one enemy
 const enemyImages = ['gazebo1.png', 'ramita.png', 'hongo.png'];
