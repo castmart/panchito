@@ -17,6 +17,10 @@ class Backgroud {
         canvasContext.drawImage(this.image, -this.backgroundOffsetX, 0, canvas.width, canvas.height);
     }
 
+    update() {
+
+    }
+
     onLoad(fn) {
         this.image.onload = fn;
     }
@@ -39,11 +43,52 @@ class Hero extends Character {
         super(x, y, width, height, color);
         this.jumpForce = 12; // Adjust this value to control the jump height
         this.isJumping = false;
+        this.size = this.height;
         this.velocityX = 0; // Horizontal velocity
         this.accelerationX = 0.2; // Horizontal acceleration
         this.maxSpeedX = 5; // Maximum horizontal speed
         this.isMovingRight = false;
         this.isMovingLeft = false;
+    }
+
+    update(canvas) {
+        
+        if (this.isJumping) {
+            this.y -= this.jumpForce;
+            this.jumpForce -= 1; // Apply gravity
+            if (this.y >= canvas.height - this.height) {
+                this.y = canvas.height - this.height;
+                this.isJumping = false;
+                this.jumpForce = 12;
+            }
+        }
+    
+        if(this.isMovingRight) {
+            // Apply horizontal movement physics
+            this.velocityX += this.accelerationX;
+            this.velocityX = Math.min(this.velocityX, this.maxSpeedX);
+            if (this.x >= canvas.width/2) {
+                this.x = canvas.width/2;
+            } else {
+                this.x += this.velocityX;
+            }
+            // Update background offset based on character movement
+            //background.backgroundOffsetX += background.backgroundSpeed * mainCharacter.velocityX;
+            
+        }
+    
+        if(this.isMovingLeft) {
+            this.velocityX += this.accelerationX;
+            this.velocityX = Math.min(this.velocityX, this.maxSpeedX);
+            if(this.x <= 0) {
+                this.x = 0;
+            } else {
+                this.x -= this.velocityX;
+            }
+    
+            // Update background offset based on character movement
+            //background.backgroundOffsetX -= background.backgroundSpeed * mainCharacter.velocityX;
+        }
     }
 
     draw(canvasContext) {
@@ -55,121 +100,62 @@ class Hero extends Character {
 class Enemy extends Character {
     constructor(x, y, width, height, color) {
         super(x, y, width, height, color);
+        this.size = this.height;
         this.velocityX = 0; // Horizontal velocity
         this.accelerationX = 0.2; // Horizontal acceleration
         this.maxSpeedX = 5; // Maximum horizontal speed
         this.isMovingRight = false;
         this.isMovingLeft = false;
     }
-}
 
-// Background Object
-const background = new Backgroud(0, 0, canvas.width, canvas.height);
-const mainCharacter = new Hero(50, canvas.height - 50, 50, 50, 'blue');
-const spikeCharacter = new Enemy(canvas.width, canvas.height - 10, 30, 30, 'red');
-
-// Define the main character properties
-/*
-const mainCharacter = {
-    x: 50, // Initial x position
-    y: canvas.height - 50, // Initial y position
-    width: 50, // Width of the character
-    height: 50, // Height of the character
-    color: 'blue', // Color of the character
-    jumpForce: 12, // Adjust this value to control the jump height
-    isJumping: false,
-    velocityX: 0, // Horizontal velocity
-    accelerationX: 0.2, // Horizontal acceleration
-    maxSpeedX: 5, // Maximum horizontal speed
-    isMovingRight: false,
-    isMovingLeft: false,
-};
-
-const spikeCharacter = {
-    x: canvas.width, // Initial x position
-    y: canvas.height - 10, // Initial y position
-    width: 30, // Width of the character
-    height: 30, // Height of the character
-    size: 30, // Size of the character
-    color: 'red', // Color of the character
-    velocityX: 0, // Horizontal velocity
-    accelerationX: 0.1, // Horizontal acceleration
-    maxSpeedX: 1, // Maximum horizontal speed
-    isMovingLeft: false,
-}
-*/
-function update() {
-    // Update game state
-    if (mainCharacter.isJumping) {
-        mainCharacter.y -= mainCharacter.jumpForce;
-        mainCharacter.jumpForce -= 1; // Apply gravity
-        if (mainCharacter.y >= canvas.height - mainCharacter.height) {
-            mainCharacter.y = canvas.height - mainCharacter.height;
-            mainCharacter.isJumping = false;
-            mainCharacter.jumpForce = 12;
-        }
+    update() {
+        this.x -= 1;
     }
 
+    draw(canvasContext) {
+        canvasContext.fillStyle = this.color;
+        canvasContext.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+// Background and characters
+const background = new Backgroud(0, 0, canvas.width, canvas.height);
+const mainCharacter = new Hero(50, canvas.height - 50, 50, 50, 'blue');
+const enemyCharacter = new Enemy(canvas.width, canvas.height - 30, 30, 30, 'red');
+
+function update() {
+    
+    mainCharacter.update(canvas);
+
     if(mainCharacter.isMovingRight) {
-        // Apply horizontal movement physics
-        mainCharacter.velocityX += mainCharacter.accelerationX;
-        mainCharacter.velocityX = Math.min(mainCharacter.velocityX, mainCharacter.maxSpeedX);
-        if (mainCharacter.x >= canvas.width/2) {
-            mainCharacter.x = canvas.width/2;
-        } else {
-            mainCharacter.x += mainCharacter.velocityX;
-        }
-        // Update background offset based on character movement
         background.backgroundOffsetX += background.backgroundSpeed * mainCharacter.velocityX;
-        
     }
 
     if(mainCharacter.isMovingLeft) {
-        mainCharacter.velocityX += mainCharacter.accelerationX;
-        mainCharacter.velocityX = Math.min(mainCharacter.velocityX, mainCharacter.maxSpeedX);
-        if(mainCharacter.x <= 0) {
-            mainCharacter.x = 0;
-        } else {
-            mainCharacter.x -= mainCharacter.velocityX;
-        }
-
-        // Update background offset based on character movement
         background.backgroundOffsetX -= background.backgroundSpeed * mainCharacter.velocityX;
     }
     
     // Enemies are always moving from right to left
-    spikeCharacter.x -= 1;
+    enemyCharacter.update();
 }
 
 function render() {
-
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw the background image
     background.draw(ctx);
-    //ctx.drawImage(backgroundImage, -backgroundOffsetX, 0, canvas.width, canvas.height);
 
     // Draw the main character
     mainCharacter.draw(ctx);
-    //ctx.fillStyle = mainCharacter.color;
-    //ctx.fillRect(mainCharacter.x, mainCharacter.y, mainCharacter.width, mainCharacter.height);
 
-    // Draw the spike character
-    ctx.fillStyle = spikeCharacter.color;
-    ctx.fillRect(spikeCharacter.x, spikeCharacter.y, spikeCharacter.width, spikeCharacter.height);
-    ctx.fillStyle = spikeCharacter.color;
-    ctx.beginPath();
-    ctx.moveTo(spikeCharacter.x, spikeCharacter.y);
-    ctx.lineTo(spikeCharacter.x + spikeCharacter.size / 2, spikeCharacter.y - spikeCharacter.size);
-    ctx.lineTo(spikeCharacter.x + spikeCharacter.size, spikeCharacter.y);
-    ctx.closePath();
-    ctx.fill();
+    // Draw the enemy character
+    enemyCharacter.draw(ctx);
 
     // Display status labels
     ctx.fillStyle = 'black';
     ctx.font = '16px Arial';
-    ctx.fillText(`Canvas: (${canvas.width}, ${canvas.height})`, 10, 12);
+    ctx.fillText(`Left or righ?: (${mainCharacter.isMovingLeft}, ${mainCharacter.isMovingRight})`, 10, 12);
     ctx.fillText(`Character Position: (${mainCharacter.x}, ${mainCharacter.y})`, 10, 30);
     ctx.fillText(`Is Jumping: ${mainCharacter.isJumping}`, 10, 50);
     ctx.fillText(`Velocity: ${mainCharacter.velocityX}`, 10, 70);
@@ -206,11 +192,7 @@ document.addEventListener('keyup', function(event) {
         mainCharacter.isMovingLeft = false;
     }
 });
-/*
-backgroundImage.onload = function() {
-    gameLoop();
-};
-*/
+
 background.onLoad(
     gameLoop
 )
