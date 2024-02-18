@@ -17,8 +17,16 @@ class Backgroud {
         canvasContext.drawImage(this.image, -this.backgroundOffsetX, 0, canvas.width, canvas.height);
     }
 
-    update() {
+    updateByReference(reference) {
+        if(reference.isMovingRight) {
+            // Update background offset based on character movement
+            background.backgroundOffsetX += background.backgroundSpeed * mainCharacter.velocityX;
+        }
 
+        if(reference.isMovingLeft) {
+            // Update background offset based on character movement
+            background.backgroundOffsetX -= background.backgroundSpeed * mainCharacter.velocityX;
+        }
     }
 
     onLoad(fn) {
@@ -72,8 +80,6 @@ class Hero extends Character {
             } else {
                 this.x += this.velocityX;
             }
-            // Update background offset based on character movement
-            //background.backgroundOffsetX += background.backgroundSpeed * mainCharacter.velocityX;
             
         }
     
@@ -85,9 +91,6 @@ class Hero extends Character {
             } else {
                 this.x -= this.velocityX;
             }
-    
-            // Update background offset based on character movement
-            //background.backgroundOffsetX -= background.backgroundSpeed * mainCharacter.velocityX;
         }
     }
 
@@ -124,19 +127,14 @@ const mainCharacter = new Hero(50, canvas.height - 50, 50, 50, 'blue');
 const enemyCharacter = new Enemy(canvas.width, canvas.height - 30, 30, 30, 'red');
 
 function update() {
-    
+        
     mainCharacter.update(canvas);
 
-    if(mainCharacter.isMovingRight) {
-        background.backgroundOffsetX += background.backgroundSpeed * mainCharacter.velocityX;
-    }
-
-    if(mainCharacter.isMovingLeft) {
-        background.backgroundOffsetX -= background.backgroundSpeed * mainCharacter.velocityX;
-    }
-    
     // Enemies are always moving from right to left
     enemyCharacter.update();
+
+    // Update background at the end of the update loop to already have all the computation of the characters.
+    background.updateByReference(mainCharacter);
 }
 
 function render() {
@@ -146,11 +144,11 @@ function render() {
     // Draw the background image
     background.draw(ctx);
 
-    // Draw the main character
-    mainCharacter.draw(ctx);
-
     // Draw the enemy character
     enemyCharacter.draw(ctx);
+
+    // Draw the main character
+    mainCharacter.draw(ctx);
 
     // Display status labels
     ctx.fillStyle = 'black';
