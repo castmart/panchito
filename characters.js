@@ -98,12 +98,15 @@ class Enemy {
         this.isMovingLeft = false;
         this.image = new Image();
         this.image.src = imageSrc; // Replace 'enemy.png' with the path to your enemy image
+        this.isDeletable = false;
     }
 
     update(canvas) {
         // Only update while in the canvas area
         if (this.x > 0 - this.width ) {
-            this.x -= 1;
+            this.x -= 2.5;
+        } else {
+            this.isDeletable = true;
         }
     }
 

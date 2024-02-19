@@ -14,15 +14,22 @@ class Backgroud {
     }
 
     draw(canvasContext) { 
-        canvasContext.drawImage(this.image, -this.backgroundOffsetX, 0, canvas.width, canvas.height);
+        canvasContext.drawImage(this.image, 250,0, 2000, 1300, -this.backgroundOffsetX, 0, canvas.width, canvas.height);
+        canvasContext.drawImage(this.image, 250,0, 2000, 1300, -this.backgroundOffsetX + canvas.width, 0, canvas.width, canvas.height);
     }
 
     updateByReference(reference) {
+
         if(reference.isMovingRight) {
             // Update background offset based on character movement
             background.backgroundOffsetX += background.backgroundSpeed * mainCharacter.velocityX;
+
+            if (background.backgroundOffsetX >= this.width) {
+                background.backgroundOffsetX = 0;
+            }
         }
 
+        
         if(reference.isMovingLeft) {
             // Update background offset based on character movement
             background.backgroundOffsetX -= background.backgroundSpeed * mainCharacter.velocityX;
@@ -43,7 +50,7 @@ const enemyImages = ['gazebo1.png', 'ramita.png', 'hongo.png'];
 const enemySizes = [35, 50, 60];
 const enemies = [new Enemy(canvas.width, canvas.height - 50, 50, 50, 'gazebo1.png')];
 
-const probabilityPercent = 20;
+const probabilityPercent = 25;
 // Create an enemy every 2 seconds
 const spawnEnemy = setInterval(() => {
     let randomPorcent = Math.floor(Math.random() * 100);
