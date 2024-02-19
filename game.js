@@ -50,7 +50,7 @@ const enemyImages = ['gazebo1.png', 'ramita.png', 'hongo.png'];
 const enemySizes = [35, 50, 60];
 const enemies = [new Enemy(canvas.width, canvas.height - 50, 50, 50, 'gazebo1.png')];
 
-const probabilityPercent = 25;
+const probabilityPercent = 40;
 // Create an enemy every 2 seconds
 const spawnEnemy = setInterval(() => {
     let randomPorcent = Math.floor(Math.random() * 100);
@@ -71,6 +71,18 @@ function update() {
     // Enemies are always moving from right to left
     enemies.forEach(enemy => {
         enemy.update(canvas);
+        // Check for collision between character and enemy
+        if (
+            mainCharacter.x < enemy.x + enemy.size &&
+            mainCharacter.x + mainCharacter.width > enemy.x &&
+            mainCharacter.y < enemy.y + enemy.size &&
+            mainCharacter.y + mainCharacter.height > enemy.y
+        ) {
+            // Collision detected
+            console.log('Collision detected!');
+            // You can add additional actions here, like reducing player health or ending the game
+            mainCharacter.hurt();
+        }
     });
 
     // Update background at the end of the update loop to already have all the computation of the characters.

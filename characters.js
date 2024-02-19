@@ -85,6 +85,10 @@ class Hero {
             this.height // Destination height (character height)
         );
     }
+
+    hurt() {
+        console.log("Hero hurt");
+    }
 }
 
 class Enemy {
