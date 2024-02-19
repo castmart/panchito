@@ -96,12 +96,9 @@ function render() {
     mainCharacter.draw(ctx);
 
     // Display status labels
-    ctx.fillStyle = 'black';
-    ctx.font = '16px Arial';
-    ctx.fillText(`Left or righ?: (${mainCharacter.isMovingLeft}, ${mainCharacter.isMovingRight})`, 10, 12);
-    ctx.fillText(`Character Position: (${mainCharacter.x}, ${mainCharacter.y})`, 10, 30);
-    ctx.fillText(`Is Jumping: ${mainCharacter.isJumping}`, 10, 50);
-    ctx.fillText(`Velocity: ${mainCharacter.velocityX}`, 10, 70);
+    ctx.fillStyle = 'purple';
+    ctx.font = '20px Arial';
+    ctx.fillText(`Score: ${mainCharacter.score}`, 10, 30);
 }
 
 function gameLoop() {

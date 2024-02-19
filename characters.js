@@ -22,6 +22,9 @@ class Hero {
         this.frameIndex = 1;
         this.frameCount = 6;
         this.animationSpeed = 0.3;
+
+        // Score
+        this.score = 0;
     }
 
     update(canvas) {
